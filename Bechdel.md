@@ -1,1 +1,2 @@
-
+**The numbers** (https://www.the-numbers.com/movie/budgets) has box office data for majority of movies as well as profitability for some of them, on more than 25k movies, also from the most recent ones from 2024, for example
+https://www.the-numbers.com/movie/Brutalist-The-(2024)#tab=box-office However we would likely need to webscrape the data, but they also have an API, i requested access, not sure if we can get it but worth trying.
