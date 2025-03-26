@@ -5,5 +5,6 @@ https://www.the-numbers.com/movie/Brutalist-The-(2024)#tab=box-office However we
 - movie finances, languages, production info (country, company), languages and other random info
 - cast & crew info
 - TMDB & IMDB IDs of all movies
+
 He's done a whole lotta analysis on **a gazillion things about the movie history/industry** here (https://www.kaggle.com/code/rounakbanik/the-story-of-film).
 **This Bechdel-Wallace Test Kaggle** (https://www.kaggle.com/datasets/anuvagoyal/bechdel-test?select=bechdel_test+-+bechdel_test.csv) has test results for 1,974 items (1970-2013) and **this other one** (https://www.kaggle.com/datasets/alisonyao/movie-bechdel-test-scores/data) has results for 9,373 items. Is this enough count to do a lot with this? How deep can we really dig into different avenues before we drift too far off from the actual topic? 
