@@ -11,3 +11,5 @@ He's done a whole lotta analysis on **a gazillion things about the movie history
 **This Bechdel-Wallace Test Kaggle** (https://www.kaggle.com/datasets/anuvagoyal/bechdel-test?select=bechdel_test+-+bechdel_test.csv) has test results for 1,974 items (1970-2013) and **this other one** (https://www.kaggle.com/datasets/alisonyao/movie-bechdel-test-scores/data) has results for 9,373 items. Is this enough count to do a lot with this? How deep can we really dig into different avenues before we drift too far off from the actual topic? 
 
 This IMDB API (https://rapidapi.com/octopusteam-octopusteam-default/api/imdb236) maps content on >1 genre. Has other information too (cast, directors, ratings, writers etc.)
+
+**Berlinale Gender Evaluation**: https://www.berlinale.de/media/download/presse/statistiken/gender-golden-bear-winners.pdf
