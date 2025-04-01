@@ -1,0 +1,3 @@
+SELECT *
+FROM songs
+LIMIT 10;
