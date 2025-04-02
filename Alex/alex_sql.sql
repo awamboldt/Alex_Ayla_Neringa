@@ -1,14 +1,44 @@
 SELECT *
-FROM PREP_SONGS 
-LIMIT 1;
+FROM mart_song
+WHERE country = 'Belarus';
+
+SELECT *
+FROM prep_songs
+WHERE country = 'Belarus';
+
+SELECT avg(point_ratio)
+FROM mart_relationship
+WHERE to_country = 'Belarus';
+
+SELECT YEAR,
+avg(betting_score)
+FROM PREP_BETTING PB
+WHERE country_name = 'Belarus'
+GROUP BY year;
 
 SELECT * 
 FROM PREP_BETTING PB
 LIMIT 100;
 
-SELECT *
-FROM VOTES V 
-LIMIT 1;
+SELECT relationship,
+tele_points,
+year
+FROM prep_votes
+WHERE relationship = 'Russia-Belarus'
+ORDER BY total_points Desc;
+
+SELECT relationship,
+tele_points,
+year
+FROM prep_votes
+WHERE relationship = 'Belarus-Russia'
+ORDER BY total_points Desc;
+
+SELECT relationship
+, avg(tele_points) AS avg_points
+FROM prep_votes
+WHERE relationship = 'Russia-Belarus'
+GROUP BY relationship;
 
 WITH relationship_time AS 
 	(SELECT prep_votes.relationship 
@@ -71,4 +101,13 @@ SELECT ps.*
 	, br.betting_odds
 FROM PREP_SONGS AS ps
 JOIN relationship_ratio AS rr ON ps.country = rr.to_country
-JOIN betting_ratio AS br ON ((ps.YEAR = br.YEAR) AND (ps.artist_name = br.performer) AND (ps.song_name = br.song))
+JOIN betting_ratio AS br ON ((ps.YEAR = br.YEAR) AND (ps.artist_name = br.performer) AND (ps.song_name = br.song));
+
+
+SELECT from_country
+	, relationship
+	, to_country
+	, avg(total_points) AS average_points
+FROM prep_votes
+GROUP BY from_country, relationship, to_country
+ORDER BY average_points DESC;
