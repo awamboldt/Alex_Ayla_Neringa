@@ -3,6 +3,10 @@ FROM mart_song
 WHERE country = 'Belarus';
 
 SELECT *
+FROM prep_contestants
+WHERE country = 'Belarus';
+
+SELECT *
 FROM prep_songs
 WHERE country = 'Belarus';
 
@@ -21,10 +25,10 @@ FROM PREP_BETTING PB
 LIMIT 100;
 
 SELECT relationship,
-tele_points,
+total_points, tele_points, jury_points,
 year
 FROM prep_votes
-WHERE relationship = 'Russia-Belarus'
+WHERE relationship = 'Russia-Belarus' and round = 'final'
 ORDER BY total_points Desc;
 
 SELECT relationship,
@@ -104,10 +108,6 @@ JOIN relationship_ratio AS rr ON ps.country = rr.to_country
 JOIN betting_ratio AS br ON ((ps.YEAR = br.YEAR) AND (ps.artist_name = br.performer) AND (ps.song_name = br.song));
 
 
-SELECT from_country
-	, relationship
-	, to_country
-	, avg(total_points) AS average_points
+SELECT DISTINCT to_country
 FROM prep_votes
-GROUP BY from_country, relationship, to_country
-ORDER BY average_points DESC;
+ORDER BY to_country;
