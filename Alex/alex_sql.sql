@@ -317,27 +317,29 @@ WITH separated AS (SELECT
 	, Split_part(LANGUAGE, ',', 2) AS second_language
 	, Split_part(LANGUAGE, ',', 3) AS third_language
 	FROM mart_song),
-language_fam1 AS (SELECT separated.LANGUAGE
+language_fam1 AS (SELECT 
+	separated.LANGUAGE
 	, separated.first_language
 	, separated.second_language
 	, separated.third_language
 	, european_languages.language_family
 	FROM separated
 	JOIN european_languages ON european_languages.LANGUAGE = separated.first_language)
- , language_fam2 AS (SELECT separated.LANGUAGE
+ , language_fam2 AS (SELECT 
+ 	separated.LANGUAGE
 	, separated.first_language
 	, separated.second_language
 	, separated.third_language
 	, european_languages.language_family
 	FROM separated
 	JOIN european_languages ON european_languages.LANGUAGE = separated.second_language)
---, language_fam3 AS (SELECT separated.LANGUAGE
---	, separated.first_language
---	, separated.second_language
---	, separated.third_language
---	, european_languages.language_family
---	FROM separated
---	JOIN european_languages ON european_languages.LANGUAGE = separated.third_language)
+, language_fam3 AS (SELECT separated.LANGUAGE
+	, separated.first_language
+	, separated.second_language
+	, separated.third_language
+	, european_languages.language_family
+	FROM separated
+	JOIN european_languages ON european_languages.LANGUAGE = separated.third_language)
 SELECT song_name
 	, MS.LANGUAGE
 	, (CASE WHEN MS.language ILIKE '%English%' THEN 1
@@ -346,11 +348,11 @@ SELECT song_name
 		ELSE 0 END) AS is_not_english
 	, language_fam1.language_family AS first_language_fam
 	, language_fam2.language_family AS second_language_fam
---	, language_fam3.language_family AS third_language_fam
+	, language_fam3.language_family AS third_language_fam
 FROM MART_SONG MS
 JOIN language_fam1 ON language_fam1.LANGUAGE = MS.LANGUAGE
 JOIN language_fam2 ON language_fam2.LANGUAGE = MS.LANGUAGE
---JOIN language_fam3 ON language_fam3.LANGUAGE = MS.language;
+JOIN language_fam3 ON language_fam3.LANGUAGE = MS.language;
 
 SELECT song_name
 	, MS.LANGUAGE
@@ -362,3 +364,104 @@ SELECT song_name
 FROM MART_SONG MS
 ---JOIN european_languages ON european_languages.language LIKE MS.LANGUAGE
 WHERE MS.LANGUAGE ILIKE '%,%';
+
+WITH separated AS (SELECT 
+	language
+	, Split_part(LANGUAGE, ',', 1) AS first_language
+	, Split_part(LANGUAGE, ',', 2) AS second_language
+	, Split_part(LANGUAGE, ',', 3) AS third_language
+	FROM mart_song),
+language_fam1 AS (SELECT 
+	separated.LANGUAGE
+	, separated.first_language
+	, separated.second_language
+	, separated.third_language
+	, european_languages.language_family
+	FROM separated
+	JOIN european_languages ON european_languages.LANGUAGE = separated.first_language)
+ , language_fam2 AS (SELECT 
+ 	separated.LANGUAGE
+	, separated.first_language
+	, separated.second_language
+	, separated.third_language
+	, CASE WHEN separated.third_language IS NOT NULL THEN european_languages.language_family ELSE 'None' END AS second_language_family
+	FROM separated
+	JOIN european_languages ON european_languages.LANGUAGE = separated.second_language)
+, language_fam3 AS (SELECT separated.LANGUAGE
+	, separated.first_language
+	, separated.second_language
+	, separated.third_language
+	, CASE WHEN separated.third_language IS NOT NULL THEN european_languages.language_family ELSE 'None' END AS third_language_family
+	FROM separated
+	JOIN european_languages ON european_languages.LANGUAGE = separated.third_language)
+SELECT song_name
+	, MS.LANGUAGE
+	, (CASE WHEN MS.language ILIKE '%English%' THEN 1
+		ELSE 0 END) AS is_english
+	, (CASE WHEN MS.LANGUAGE NOT LIKE 'English' THEN 1
+		ELSE 0 END) AS is_not_english
+	, language_fam1.language_family AS first_language_fam
+	, language_fam2.second_language_family AS second_language_fam
+	, language_fam3.third_language_family AS third_language_fam
+FROM MART_SONG MS
+JOIN language_fam1 ON language_fam1.LANGUAGE = MS.LANGUAGE
+JOIN language_fam2 ON language_fam2.LANGUAGE = MS.LANGUAGE
+JOIN language_fam3 ON language_fam3.LANGUAGE = MS.LANGUAGE;
+
+
+UPDATE songs_info
+SET language = CASE 
+	WHEN language = 'Greek1' THEN 'Greek'
+    WHEN language = 'Greek3' THEN 'Greek'
+    ELSE language
+END;
+
+SELECT *
+FROM MART_RELATIONSHIP MR;
+
+
+
+
+
+
+WITH points AS (SELECT prep_votes.relationship
+		, prep_votes.from_country
+		, prep_votes.to_country
+		, prep_votes.YEAR AS contest_year
+		, prep_votes.total_points
+		, (CASE WHEN prep_votes.YEAR >=2016 THEN prep_votes.total_points/24.0
+		ELSE prep_votes.total_points/12.0 END) AS point_ratio
+		FROM prep_votes
+		WHERE round='final'),
+	average AS (SELECT relationship
+		, AVG(point_ratio) AS avg_point_ratio
+		FROM points
+		GROUP BY relationship)
+SELECT points.*
+, average.avg_point_ratio
+FROM points
+JOIN average ON points.relationship = average.relationship
+WHERE points.relationship = 'Austria-France';
+
+WITH points AS (SELECT prep_votes.relationship
+		, prep_votes.from_country
+		, prep_votes.to_country
+		, prep_votes.YEAR AS contest_year
+		, prep_votes.total_points
+		, (CASE WHEN prep_votes.YEAR >=2016 THEN prep_votes.total_points/24.0
+		ELSE prep_votes.total_points/12.0 END) AS point_ratio
+		FROM prep_votes
+		WHERE round='final'),
+	count AS (SELECT *
+		, (CASE WHEN point_ratio = 1 THEN 1 ELSE 0 END) AS first_place
+		FROM points),
+	average AS (SELECT relationship
+		, AVG(point_ratio) AS avg_point_ratio
+		, COUNT(first_place) AS total_firsts
+		FROM count
+		GROUP BY relationship)
+SELECT points.*
+, average.avg_point_ratio
+, average.total_firsts
+FROM points
+JOIN average ON points.relationship = average.relationship;
